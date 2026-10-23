@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>刷题助手</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:linear-gradient(160deg,#eef4ff,#f8fbff);color:#1e293b}
+  .card{max-width:420px;padding:32px 28px;text-align:center}
+  .logo{width:56px;height:56px;border-radius:16px;background:#2563eb;color:#fff;
+        display:flex;align-items:center;justify-content:center;margin:0 auto 18px;
+        font-size:28px;font-weight:700;box-shadow:0 8px 24px rgba(37,99,235,.28)}
+  h1{font-size:20px;margin:0 0 8px}
+  p{font-size:14px;color:#64748b;line-height:1.7;margin:6px 0}
+  a{color:#2563eb}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">题</div>
+  <h1>刷题助手</h1>
+  <p id="tip">正在跳转到题库…</p>
+  <p id="fallback" style="display:none">
+    如果页面没有自动跳转，请联系分享者获取最新地址。
+  </p>
+</div>
+<script>
+(function () {
+  var tip = document.getElementById('tip');
+  var fallback = document.getElementById('fallback');
+  function fail(msg) { tip.textContent = msg; fallback.style.display = 'block'; }
+  fetch('current.json?t=' + Date.now(), {cache: 'no-store'})
+    .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(function (d) {
+      if (d && typeof d.url === 'string' && /^https?:\/\//.test(d.url)) {
+        tip.textContent = '正在跳转到题库…';
+        location.replace(d.url);
+      } else {
+        fail('暂时没有可用地址。');
+      }
+    })
+    .catch(function () { fail('访问地址获取失败，请刷新重试。'); });
+})();
+</script>
+</body>
+</html>
